@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="/public/html/jquery-3.2.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+          $("button").click(function(){
+            $.post("/v1/user/signin",'{"email":"michael.chu@test.com","password":"123456"}',function(data,status){
+              alert("数据：" + data + "\n状态：" + status);
+            });
+          });
+        });
+      </script>
+      <script>
+        function Login(){
+          $.post("/v1/user/signup",'{"name":"michael",email":"michael.chu@test.com","password":"123456"}',function(data,status){
+              alert("数据：" + data + "\n状态：" + status);
+            });
+        }
+    </script>
+</head>
+<body>
+
+<button>向页面发送 HTTP POST Signup 注册用户请求，然后获得返回的结果</button>
+<button>向页面发送 HTTP POST Login 请求，然后获得返回的结果</button>
+
+<h1 onclick="Login()">登录，然后获得返回的结果</h1>
+</body>
+</html>

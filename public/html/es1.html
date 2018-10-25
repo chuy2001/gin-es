@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>es-post</title>
+    <script src="/public/html/jquery-3.2.1.min.js"></script>
+    <script>
+    $(document).ready(function(){
+      $("button").click(function(){
+        $.post("v1/_msearch",
+        '{"search_type":"query_then_fetch","ignore_unavailable":true,"index":["tele*2017.08.12"]}\
+        {"size":0,"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"1502290359589","lte":"1502545105","format":"epoch_millis"}}},{"query_string":{"analyze_wildcard":true,"query":"*"}}]}},"aggs":{"2":{"terms":{"field":"@timestamp","size":10,"order":{"_term":"asc"},"min_doc_count":0},"aggs":{"1":{"avg":{"field":"cpu.usage_idle"}},"3":{"avg":{"field":"cpu.usage_guest"}}}}}}',
+        function(data,status){
+          alert("数据：" + data + "\n状态：" + status);
+        });
+      });
+    });
+    </script>
+</head>
+<body>
+
+<button>向页面发送 HTTP POST ES 请求，并获得返回的结果</button>
+
+</body>
+</html>
