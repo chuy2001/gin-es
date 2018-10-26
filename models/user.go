@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	// "time"
+	"time"
 
 	"github.com/chuy2001/gin-es/db"
 	"github.com/chuy2001/gin-es/forms"
@@ -27,7 +27,7 @@ type UserModel struct{}
 //Signin ...
 func (m UserModel) Signin(form forms.SigninForm) (user User, err error) {
 
-	rows, err  := db.GetDB().QueryOne("SELECT id, email, password, name, updated_at, created_at FROM public.user WHERE email=LOWER(" + form.Email +") LIMIT 1")
+	rows, err  := db.GetDB().QueryOne("SELECT id, email, password, name, updated_at, created_at FROM user WHERE email=LOWER(" + form.Email +") LIMIT 1")
 	if err != nil {
 		return user, err
 	}
@@ -51,32 +51,48 @@ func (m UserModel) Signin(form forms.SigninForm) (user User, err error) {
 func (m UserModel) Signup(form forms.SignupForm) (user User, err error) {
 	getDb := db.GetDB()
 
-	checkUser, err := getDb.QueryOne("SELECT count(id) FROM public.user WHERE email=LOWER(" +form.Email + ") LIMIT 1")
-	fmt.Println("checkUser:", checkUser, err)
+	checkUser, err := getDb.QueryOne("SELECT count(id) FROM user WHERE email=LOWER('" +form.Email + "') LIMIT 1")
+	fmt.Println("checkUser:", checkUser.NumRows())
 
 	if err != nil {
 		return user, err
 	}
 
-	if checkUser.NumRows() > 0 {
+	if checkUser.NumRows() > 1 {
 		return user, errors.New("User exists")
 	}
     
-	// bytePassword := []byte(form.Password)
-	// hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	bytePassword := []byte(form.Password)
+	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
 
-	// res, err := getDb.WriteOne("INSERT INTO public.user(email, password, name, updated_at, created_at) VALUES($1, $2, $3, $4, $5) RETURNING id", form.Email, string(hashedPassword), form.Name, time.Now().Unix(), time.Now().Unix())
-	// fmt.Println(" getDb.Exec:", res, err)
+	// simulate database/sql Prepare()
+	
+	// pattern := "INSERT INTO secret_agents(id, hero_name, abbrev) VALES (%d, '%s', '%3s')"
+	pattern := "INSERT INTO user(email, password, name, updated_at, created_at) VALUES('%s', '%s', '%s', '%s', '%s')"
+	
+	statements := fmt.Sprintf(pattern,form.Email, string(hashedPassword), form.Name, time.Now().Unix(), time.Now().Unix())
+	res, err := getDb.WriteOne(statements)
+	fmt.Println(" getDb.Exec:", res, err)
 
-	// if res != nil && err == nil {
-	// 	err = getDb.QueryOne("SELECT id, email, name, updated_at, created_at FROM public.user WHERE email=LOWER(" + form.Email + ") LIMIT 1")
-	// 	if err == nil {
-	// 		return user, nil
-	// 	}
-	// }
+	if err == nil {
+		pattern1 := "SELECT id, email, name, updated_at, created_at FROM user WHERE email=LOWER('%s') LIMIT 1"
+		statements1 := fmt.Sprintf(pattern1,form.Email)
+
+		rows ,err := getDb.QueryOne(statements1)
+		fmt.Printf("query returned %d rows\n",rows.NumRows())
+		if err == nil {
+			for rows.Next() {
+				err := rows.Scan(&user.ID, &user.Email,&user.Name,&user.UpdatedAt,&user.CreatedAt)
+				if err == nil { return user, nil}
+				fmt.Printf("this is row number %d\n",rows.RowNumber())
+				fmt.Printf("there are %d rows \n",rows.NumRows())
+			}
+			return user, nil
+		}
+	}
 
 	return user, errors.New("Not registered")
 }

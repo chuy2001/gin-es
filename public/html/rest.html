@@ -5,25 +5,53 @@
     <script src="/public/html/jquery-3.2.1.min.js"></script>
     <script>
         $(document).ready(function(){
-          $("button").click(function(){
+          $(".btn1").click(function(){
             $.post("/v1/user/signin",'{"email":"michael.chu@test.com","password":"123456"}',function(data,status){
               alert("数据：" + data + "\n状态：" + status);
             });
           });
         });
-      </script>
-      <script>
-        function Login(){
-          $.post("/v1/user/signup",'{"name":"michael",email":"michael.chu@test.com","password":"123456"}',function(data,status){
-              alert("数据：" + data + "\n状态：" + status);
-            });
-        }
+        $(document).ready(function(){
+          $(".btn2").click(function(){
+            var data={
+              "name": "michael",
+              "email": "michael.chu@test.com", 
+              "password": "123456"
+          };
+          var data=JSON.stringify(data);
+          $.ajax({ 
+            type: "POST",   
+            url: "/v1/user/signup",
+            data:data,
+            dataType: "json",
+            contentType:"application/json;charset=utf-8",
+            success: function(data){
+              if (data.id) { 
+                      console.log(data.msg);
+              } else {
+                      console.log("出现错误：" + data.msg);
+              }
+            },
+            error: function(jqXHR){     
+              alert("发生错误：" + jqXHR.status);  
+            },     
+          });
+        });
+      });
     </script>
+    <script>
+      function Login(){
+        $.post("/v1/user/signup",'{"name":"michael",email":"michael.chu@test.com","password":"123456"}',function(data,status){
+            alert("数据：" + data + "\n状态：" + status);
+          });
+      }
+  </script>
 </head>
 <body>
 
-<button>向页面发送 HTTP POST Signup 注册用户请求，然后获得返回的结果</button>
-<button>向页面发送 HTTP POST Login 请求，然后获得返回的结果</button>
+<button class="btn1">向页面发送 HTTP POST Signup 注册用户请求，然后获得返回的结果</button>
+<p></p>
+<button class="btn2">登录，然后获得返回的结果</button>
 
 <h1 onclick="Login()">登录，然后获得返回的结果</h1>
 </body>

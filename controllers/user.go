@@ -71,7 +71,6 @@ func (ctrl UserController) Signup(c *gin.Context) {
 	}
 
 	user, err := userModel.Signup(signupForm)
-
 	if err != nil {
 		c.JSON(406, gin.H{"message": err.Error()})
 		c.Abort()
