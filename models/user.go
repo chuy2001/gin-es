@@ -27,13 +27,16 @@ type UserModel struct{}
 //Signin ...
 func (m UserModel) Signin(form forms.SigninForm) (user User, err error) {
 
-	rows, err  := db.GetDB().QueryOne("SELECT id, email, password, name, updated_at, created_at FROM user WHERE email=LOWER(" + form.Email +") LIMIT 1")
+	rows, err  := db.GetDB().QueryOne("SELECT id, email, password, name, updated_at, created_at FROM user WHERE email=LOWER('" + form.Email +"') LIMIT 1")
 	if err != nil {
 		return user, err
 	}
 	fmt.Printf("query returned %d rows\n",rows.NumRows())
-
-	err = rows.Scan(user.Password)
+	
+	for rows.Next() {
+		err = rows.Scan(&user.ID, &user.Email,&user.Password,&user.Name,&user.UpdatedAt,&user.CreatedAt)
+		if err == nil { return user, nil}
+	}
 
 	bytePassword := []byte(form.Password)
 	byteHashedPassword := []byte(user.Password)
@@ -51,7 +54,9 @@ func (m UserModel) Signin(form forms.SigninForm) (user User, err error) {
 func (m UserModel) Signup(form forms.SignupForm) (user User, err error) {
 	getDb := db.GetDB()
 
-	checkUser, err := getDb.QueryOne("SELECT count(id) FROM user WHERE email=LOWER('" +form.Email + "') LIMIT 1")
+	// checkUser, err := getDb.QueryOne("SELECT count(id) FROM user WHERE email=LOWER('" +form.Email + "') LIMIT 1")
+	checkUser, err := getDb.QueryOne("SELECT count(id) FROM user")
+
 	fmt.Println("checkUser:", checkUser.NumRows())
 
 	if err != nil {
