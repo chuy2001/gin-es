@@ -11,7 +11,11 @@ import (
 	"github.com/chuy2001/gin-es/db"
 	"github.com/chuy2001/gin-es/models"
 
-	"github.com/gin-gonic/contrib/sessions"
+	// "github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+
+	// "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olivere/elastic.v5"
 )
@@ -104,7 +108,10 @@ func main() {
 	r := gin.Default()
 
 	// store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
-	store, _ := sessions.NewRedisStore(10, "tcp", "192.168.1.123:6379", "", []byte("secret"))
+	// store, _ := sessions.NewRedisStore(10, "tcp", "192.168.1.123:6379", "", []byte("secret"))
+	// store, _ := redis.NewRedisStore(10, "tcp", "192.168.1.123:6379", "", []byte("secret"))
+	store := cookie.NewStore([]byte("secret"))
+
 	r.Use(sessions.Sessions("gin-boilerplate-session", store))
 
 	r.Use(CORSMiddleware())

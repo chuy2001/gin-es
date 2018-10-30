@@ -4,7 +4,7 @@ import (
 	"github.com/chuy2001/gin-es/forms"
 	"github.com/chuy2001/gin-es/models"
 
-	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 

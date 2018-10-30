@@ -35,7 +35,7 @@ func (m UserModel) Signin(form forms.SigninForm) (user User, err error) {
 	
 	for rows.Next() {
 		err = rows.Scan(&user.ID, &user.Email,&user.Password,&user.Name,&user.UpdatedAt,&user.CreatedAt)
-		if err == nil { return user, nil}
+		if err != nil { return user, err}
 	}
 
 	bytePassword := []byte(form.Password)
@@ -54,16 +54,24 @@ func (m UserModel) Signin(form forms.SigninForm) (user User, err error) {
 func (m UserModel) Signup(form forms.SignupForm) (user User, err error) {
 	getDb := db.GetDB()
 
-	// checkUser, err := getDb.QueryOne("SELECT count(id) FROM user WHERE email=LOWER('" +form.Email + "') LIMIT 1")
-	checkUser, err := getDb.QueryOne("SELECT count(id) FROM user")
-
-	fmt.Println("checkUser:", checkUser.NumRows())
-
+	checkUser, err := getDb.QueryOne("SELECT count(id) FROM user WHERE email=LOWER('" +form.Email + "') LIMIT 1")
+	// checkUser, err := getDb.QueryOne("SELECT count(id) FROM user")
 	if err != nil {
 		return user, err
 	}
+	var countid=-1 
+	if err == nil {
+		for checkUser.Next() {
+			err := checkUser.Scan(&countid)
+			if err != nil { 
+				return user, err
+			}
+			fmt.Printf("this is row number %d\n",checkUser.RowNumber())
+			fmt.Printf("there are %d rows \n",checkUser.NumRows())
+		}
+	}
 
-	if checkUser.NumRows() > 1 {
+	if countid > 0 {
 		return user, errors.New("User exists")
 	}
     
@@ -76,7 +84,7 @@ func (m UserModel) Signup(form forms.SignupForm) (user User, err error) {
 	// simulate database/sql Prepare()
 	
 	// pattern := "INSERT INTO secret_agents(id, hero_name, abbrev) VALES (%d, '%s', '%3s')"
-	pattern := "INSERT INTO user(email, password, name, updated_at, created_at) VALUES('%s', '%s', '%s', '%s', '%s')"
+	pattern := "INSERT INTO user(email, password, name, updated_at, created_at) VALUES('%s', '%s', '%s', '%d', '%d')"
 	
 	statements := fmt.Sprintf(pattern,form.Email, string(hashedPassword), form.Name, time.Now().Unix(), time.Now().Unix())
 	res, err := getDb.WriteOne(statements)
@@ -91,8 +99,9 @@ func (m UserModel) Signup(form forms.SignupForm) (user User, err error) {
 		if err == nil {
 			for rows.Next() {
 				err := rows.Scan(&user.ID, &user.Email,&user.Name,&user.UpdatedAt,&user.CreatedAt)
-				if err == nil { return user, nil}
-				fmt.Printf("this is row number %d\n",rows.RowNumber())
+				if err != nil { 
+					return user, nil
+				}
 				fmt.Printf("there are %d rows \n",rows.NumRows())
 			}
 			return user, nil
