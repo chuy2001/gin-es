@@ -5,14 +5,14 @@
     <script src="/public/html/jquery-3.2.1.min.js"></script>
     <script>
         $(document).ready(function(){
-          $(".btn1").click(function(){
+          $(".btn2").click(function(){
             $.post("/v1/user/signin",'{"email":"michael.chu@test.com","password":"123456"}',function(data,status){
-              alert("数据：" + data + "\n状态：" + status);
+              alert("数据：" + JSON.stringify(data) + "\n状态：" + status);
             });
           });
         });
         $(document).ready(function(){
-          $(".btn2").click(function(){
+          $(".btn1").click(function(){
             var data={
               "name": "michael",
               "email": "michael.chu@test.com", 
@@ -33,26 +33,38 @@
               }
             },
             error: function(jqXHR){     
-              alert("发生错误：" + jqXHR.status);  
+              alert("发生错误：" + jqXHR.status + data);  
             },     
           });
         });
       });
-    </script>
-    <script>
-      function Login(){
-        $.post("/v1/user/signup",'{"name":"michael",email":"michael.chu@test.com","password":"123456"}',function(data,status){
-            alert("数据：" + data + "\n状态：" + status);
+        $(document).ready(function(){
+            $(".btn3").click(function(){
+              $.post("/v1/user/signout",'',function(data,status){
+                alert("数据：" + JSON.stringify(data) + "\n状态：" + status);
+              });
+            });
           });
-      }
-  </script>
+        $(document).ready(function(){
+          $(".btn4").click(function(){
+            $.post("v1/_msearch",
+            '{"search_type":"query_then_fetch","ignore_unavailable":true,"index":["tele*2017.08.12"]}\
+            {"size":0,"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"1502290359589","lte":"1502545105","format":"epoch_millis"}}},{"query_string":{"analyze_wildcard":true,"query":"*"}}]}},"aggs":{"2":{"terms":{"field":"@timestamp","size":10,"order":{"_term":"asc"},"min_doc_count":0},"aggs":{"1":{"avg":{"field":"cpu.usage_idle"}},"3":{"avg":{"field":"cpu.usage_guest"}}}}}}',
+            function(data,status){
+              alert("数据：\n" + JSON.stringify(data) + "\n状态：" + status);
+            });
+          });
+        });
+    </script>
 </head>
 <body>
 
-<button class="btn1">用户登录  获得返回的结果</button>
+<button class="btn1">注册</button>
 <p></p>
-<button class="btn2">注册用户 获得返回的结果</button>
+<button class="btn2">用户登录 </button>
+<button class="btn3">登出</button>
+<p></p>
+<button class="btn4">查询es</button>
 
-<h1 onclick="Login()">登录，然后获得返回的结果</h1>
 </body>
 </html>

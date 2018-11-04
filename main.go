@@ -133,7 +133,7 @@ func main() {
 
 		v1.POST("/user/signin", user.Signin)
 		v1.POST("/user/signup", user.Signup)
-		v1.GET("/user/signout", user.Signout)
+		v1.POST("/user/signout", user.Signout)
 
 		/*** START ElasticSearch ***/
 		es := new(controllers.EsController)
