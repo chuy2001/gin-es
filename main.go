@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,7 +8,6 @@ import (
 	"github.com/chuy2001/gin-es/config"
 	"github.com/chuy2001/gin-es/controllers"
 	"github.com/chuy2001/gin-es/db"
-	"github.com/chuy2001/gin-es/models"
 
 	// "github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-contrib/sessions"
@@ -17,7 +15,6 @@ import (
 
 	// "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/olivere/elastic.v5"
 )
 
 //CORSMiddleware ...
@@ -39,9 +36,8 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func ContextInjector(ESClient *elastic.Client, AMQPChannel string, config *config.Config) gin.HandlerFunc {
+func ContextInjector( AMQPChannel string, config *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Set("ESClient", ESClient)
 		c.Set("AMQPChannel", AMQPChannel)
 		c.Set("Config", config)
 
@@ -49,62 +45,8 @@ func ContextInjector(ESClient *elastic.Client, AMQPChannel string, config *confi
 	}
 }
 
-//Init elastic
-func initESClient(url string, indices []string, doSniff bool) *elastic.Client {
-
-	log.Printf("Connecting to ES on: %v", url)
-	elasticClient, err := elastic.NewClient(elastic.SetURL(url), elastic.SetSniff(doSniff))
-	models.CheckFatalError(err)
-
-	log.Println("Connected to ES")
-
-	// Ping the Elasticsearch server to get e.g. the version number
-	info, code, err := elasticClient.Ping("http://127.0.0.1:9200").Do(context.Background())
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-	fmt.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
-
-	// Getting the ES version number is quite common, so there's a shortcut
-	esversion, err := elasticClient.ElasticsearchVersion("http://127.0.0.1:9200")
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-	fmt.Printf("Elasticsearch version %s\n", esversion)
-
-	for _, index := range indices {
-
-		log.Printf("Initializing Index: %s", index)
-
-		indexExists, err := elasticClient.IndexExists(index).Do(context.Background())
-		models.CheckFatalError(err)
-		if !indexExists {
-			resp, err := elasticClient.CreateIndex(index).Do(context.Background())
-			models.CheckFatalError(err)
-			if !resp.Acknowledged {
-				log.Fatalf("Cannot create index: %s on ES", index)
-			}
-			log.Printf("Created index: %s on ES", index)
-
-		} else {
-			log.Printf("Index: %s already exists on ES", index)
-		}
-
-		_, err = elasticClient.OpenIndex(index).Do(context.Background())
-		models.CheckFatalError(err)
-
-		mapping, err := elasticClient.GetMapping().Index(index).Do(context.Background())
-		if err != nil {
-			log.Printf("Cannot get mapping for index: %s", index)
-		}
-		log.Printf("Mapping for index %s: %s", index, mapping)
-	}
-
-	return elasticClient
-}
 func main() {
+	config := config.GetConfFromJSONFile("config.json")
 	r := gin.Default()
 
 	// store, _ := sessions.NewRedisStore(10, "tcp", "localhost:6379", "", []byte("secret"))
@@ -113,18 +55,13 @@ func main() {
 	store := cookie.NewStore([]byte("secret"))
 
 	r.Use(sessions.Sessions("gin-boilerplate-session", store))
-
 	r.Use(CORSMiddleware())
 
-	log.Println("Starting elasticgin") 
 	//Config fetch
-	config := config.GetConfFromJSONFile("config.json")
-	//ES init
-	esClient := initESClient(config.ElasticURL, config.Indices, config.SniffCluster)
-	defer esClient.Stop()
-	r.Use(ContextInjector(esClient, "null", config))
-
+	log.Println("Starting sql & elasticsearch") 
 	db.Init()
+	db.InitESDB()
+	r.Use(ContextInjector("null", config))
 
 	v1 := r.Group("/v1")
 	{
@@ -137,8 +74,13 @@ func main() {
 
 		/*** START ElasticSearch ***/
 		es := new(controllers.EsController)
+		v1.POST("/table", es.AddTable)
 		v1.POST("/_search", es.Search)
 		v1.POST("/_msearch", es.MSearch)
+
+		/*** START Table Management ***/
+		table := new(controllers.TableController)
+		v1.POST("/mgnt/table", table.AddTable)
 	}
 
 	r.LoadHTMLGlob("./public/html/*")
