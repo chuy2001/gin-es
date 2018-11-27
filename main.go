@@ -80,21 +80,26 @@ func main() {
 
 		/*** START Table Management ***/
 		table := new(controllers.TableController)
-		v1.POST("/mgnt/table", table.AddTable)
+		v1.POST("/mgmt/table", table.AddTable)
+		v1.PUT("/mgmt/table", table.UpdateTable)
+		v1.DELETE("/mgmt/table", table.DeleteTable)
 	}
 
-	r.LoadHTMLGlob("./public/html/*")
+	// r.LoadHTMLGlob("./public/html/*")
 
 	r.Static("/public", "./public")
 
+	// r.GET("/", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	// 		"ECharts入门示例 - 柱状图":      "bar",
+	// 		"ECharts入门示例 - rest-get": "rest",
+	// 		"ECharts入门示例 - es-post":  "es1",
+	// 		"ECharts入门示例 - CMDB":  "cmdb",
+	// 	})
+	// })
 	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"ECharts入门示例 - 柱状图":      "bar",
-			"ECharts入门示例 - rest-get": "rest",
-			"ECharts入门示例 - es-post":  "es1",
-		})
+		c.Redirect(http.StatusMovedPermanently, "/public/cmdb/index.html")
 	})
-
 	r.GET("/bar", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "bar.html", gin.H{})
 	})
@@ -103,6 +108,10 @@ func main() {
 	})
 	r.GET("/es1", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "es1.html", gin.H{})
+	})
+
+	r.GET("/cmdb", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
 
 	r.NoRoute(func(c *gin.Context) {

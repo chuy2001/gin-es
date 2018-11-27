@@ -29,3 +29,41 @@ func (ctrl TableController) AddTable(c *gin.Context) {
 	}
 	log.Println("TableController AddTable OK")
 }
+
+//UpdateTable ...
+func (ctrl TableController) UpdateTable(c *gin.Context) {
+	var tableForm forms.TableForm
+
+	if c.BindJSON(&tableForm) != nil {
+		c.JSON(406, gin.H{"message": "Invalid form", "form": tableForm})
+		c.Abort()
+		return
+	}
+
+	err := TableModel.AddTable(tableForm)
+	if err == nil {
+		c.JSON(200, gin.H{"message": "table add success"})
+	} else {
+		c.JSON(406, gin.H{"message": "table add failed", "error": err.Error()})
+	}
+	log.Println("TableController AddTable OK")
+}
+
+//DeleteTable ...
+func (ctrl TableController) DeleteTable(c *gin.Context) {
+	var tableForm forms.TableForm
+
+	if c.BindJSON(&tableForm) != nil {
+		c.JSON(406, gin.H{"message": "Invalid form", "form": tableForm})
+		c.Abort()
+		return
+	}
+
+	err := TableModel.AddTable(tableForm)
+	if err == nil {
+		c.JSON(200, gin.H{"message": "table add success"})
+	} else {
+		c.JSON(406, gin.H{"message": "table add failed", "error": err.Error()})
+	}
+	log.Println("TableController AddTable OK")
+}
