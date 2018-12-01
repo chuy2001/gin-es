@@ -1,3 +1,5 @@
 gin-es.exe
 public/cmdb
+public/dist
+public/node_modules
 desktop.ini

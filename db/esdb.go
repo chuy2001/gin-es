@@ -14,7 +14,7 @@ const esURL = "http://127.0.0.1:9200"
 func InitESDB() {
 
 	log.Printf("Connecting to ES on: %v", esURL)
-	esdb, err := es.NewClient(es.SetURL(esURL), es.SetSniff(false))
+	client, err := es.NewClient(es.SetURL(esURL), es.SetSniff(false))
 	if err != nil {
 		// Handle error
 		log.Fatalln("ES Connecting failed",err)
@@ -22,7 +22,7 @@ func InitESDB() {
 	}
 
 	// Ping the Elasticsearch server to get e.g. the version number
-	info, code, err := esdb.Ping(esURL).Do(context.Background())
+	info, code, err := client.Ping(esURL).Do(context.Background())
 	if err != nil {
 		// Handle error
 		log.Fatalln("ES Ping failed",err)
@@ -31,13 +31,14 @@ func InitESDB() {
 	log.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
 
 	// Getting the ES version number is quite common, so there's a shortcut
-	esversion, err := esdb.ElasticsearchVersion(esURL)
+	esversion, err := client.ElasticsearchVersion(esURL)
 	if err != nil {
 		// Handle error
 		log.Fatalln("ES ElasticsearchVersion failed",err)
 		panic(err)
 	}
 	log.Printf("Elasticsearch version %s\n", esversion)
+	esdb = client
 }
 
 //GetDB ...
