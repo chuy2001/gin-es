@@ -1,0 +1,11 @@
+{
+    "apiURL":"0.0.0.0:8787",
+	"elasticURL":"http://127.0.0.1:9200",
+	"indices":["elastic_gin"],
+	"defaultIndex":"elastic_gin",
+	"sniffCluster":false,
+	"useAMQP":true,
+	"amqpURL":"amqp://127.0.0.1:9200",
+	"amqpQueues":["elastic_gin"],
+	"ginDebug":true
+}

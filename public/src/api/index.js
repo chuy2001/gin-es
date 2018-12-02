@@ -4,8 +4,9 @@ import store from '@/store'
 import app from '@/main'
 
 // export var baseURL = window.location.protocol + '//' + window.location.host + '/api/v1/'
-export var baseURL = '/v1/'
+// export var baseURL = '/v1/'
 // export var baseURL = window.location.protocol + '//' + window.location.host + '9000' + '/api/v1/'
+export var baseURL = "http://127.0.0.1:9000/v1"
 
 export var master = axios.create({
   // baseURL: "http://cmdb.mingmingt.xyz/api/v1/",
@@ -32,6 +33,9 @@ master.interceptors.request.use(config => {
       }
     }
     config.headers.Authorization = store.state.token
+    config.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+    // config.headers.Content.Type = 'application/x-www-form-urlencoded'
+
   }
   return config
 }, error => {
@@ -77,6 +81,7 @@ master.interceptors.response.use(response => {
 Masters.interceptors.request.use(config => {
   if (store.state.is_logged) {
     config.headers.Authorization = store.state.token
+    config.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   }
   return config
 }, error => {

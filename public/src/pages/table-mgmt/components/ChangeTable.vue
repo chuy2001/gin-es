@@ -56,6 +56,7 @@ export default {
     return {
       is_visible: true,
       form_data: !this.is_create ? JSON.parse(JSON.stringify(this.data)) : {
+        id: this.id,
         name: '',
         alias: '',
         readme: '',
@@ -71,7 +72,7 @@ export default {
       errors: {}
     }
   },
-  props: ['is_create', 'data'],
+  props: ['is_create', 'data', 'id'],
   mounted () {
     // this.data.fields.push({'id':121,'name':'xxxxx','alias':null,'readme':'','type':0,'is_multi':false,'required':true})
   },
@@ -110,12 +111,12 @@ export default {
         Masters.post('mgmt/table', this.form_data).then((response) => {
           this.$message.success('添加成功')
           this.errors = {}
-          this.$emit('add_table', response.data)
+          this.$emit('add_table', response.data.data)
         }).catch((error) => {
           this.errors = error.response.data
         })
       } else {
-        Masters.put(`mgmt/table`, this.form_data).then((response) => {
+        Masters.put(`mgmt/table/${this.form_data.id}`, this.form_data).then((response) => {
           this.$message.success('修改成功')
           this.errors = {}
           for (let key in this.form_data) {
