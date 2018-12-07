@@ -2,7 +2,7 @@
   <d2-container>
   <div style="width: 100%; margin: 0px auto;">
     <el-button size="medium" type="primary" @click="on_add_table" icon="el-icon-plus">添加</el-button>
-    <el-table :data="tables" stripe=ture style="width: 100%" :default-sort = "{prop: 'creation_time', order: 'descending'}">
+    <el-table :data="tables" stripe  style="width: 100%" :default-sort = "{prop: 'creation_time', order: 'descending'}">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
