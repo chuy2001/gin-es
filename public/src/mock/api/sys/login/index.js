@@ -100,3 +100,32 @@ var  formatDate  =   function (date)  {      
   d  = d <10 ? ('0'+ d): d    
   return y + '-' + m + '-' + d
 }
+
+
+Mock.mock('/api/business/table', ({ body }) => {
+  // 这是通过 post 传来的参数
+  body = JSON.parse(body)
+  const { page } = body
+  page.total = 1000
+  return Mock.mock(
+    {
+      code: 0,
+      msg: '获取数据成功',
+      data: {
+        page,
+        'list|20': [
+          {
+            'key': '@guid',
+            'value|1': [10, 100, 200, 500],
+            'type': '@boolean',
+            'admin': '@cname',
+            'adminNote': '@cparagraph(0.5)',
+            'dateTimeCreat': '@datetime',
+            'used': '@boolean',
+            'dateTimeUse': '@datetime'
+          }
+        ]
+      }
+    }
+  )
+})
