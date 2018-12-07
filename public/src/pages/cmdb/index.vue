@@ -1,156 +1,144 @@
 <template>
-  <div>
-    <c-option-bar>
-      <el-button size="medium" type="primary" @click="on_add" icon="el-icon-plus">添加</el-button>
-      <c-search placeholder="表明/别名/创建人" :parent="this"></c-search>
-    </c-option-bar>
-    <el-table :data="data" border stripe size="medium" @filter-change="on_change_filter" @sort-change="on_change_sort" v-loading="loading" style="width: 100%">
-      <el-table-column label="表名" prop="name" :show-overflow-tooltip="true">>
+  <d2-container>
+  <div style="width: 100%; margin: 0px auto;">
+    <el-button size="medium" type="primary" @click="on_add_table" icon="el-icon-plus">添加</el-button>
+    <el-table :data="tables" stripe=ture style="width: 100%" :default-sort = "{prop: 'creation_time', order: 'descending'}">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="表名">
+              <span>{{ props.row.name }}</span>
+            </el-form-item>
+            <el-form-item label="别名">
+              <span>{{ props.row.alias }}</span>
+            </el-form-item>
+            <el-form-item label="描述">
+              <span>{{ props.row.readme }}</span>
+            </el-form-item>
+            <el-form-item label="ID">
+              <span>{{ props.row.id }}</span>
+            </el-form-item>
+            <el-form v-for="(item) in props.row.fields" :key="item.id" size="small" :inline="true" label-width="60px">
+              <el-form-item label="字段">
+                <span>{{ item.name}}</span>
+              </el-form-item>
+              <el-form-item label="别名">
+                <span>{{ item.alias}}</span>
+              </el-form-item>
+              <el-form-item label="描述">
+                <span>{{ item.readme}}</span>
+              </el-form-item>
+              <el-form-item label="多值">
+                <span>{{ item.is_multi}}</span>
+              </el-form-item>
+              <el-form-item label="必选">
+                <span>{{ item.required}}</span>
+              </el-form-item>
+            </el-form>
+          </el-form>
+        </template>
       </el-table-column>
-      <el-table-column label="别名" prop="alias" :show-overflow-tooltip="true">>
+      <el-table-column type="index" width="50">
       </el-table-column>
-      <el-table-column label="自述" prop="readme" :show-overflow-tooltip="true">
+      <el-table-column label="表名" prop="name" sortable>
       </el-table-column>
-      <el-table-column label="创建人" prop="creator_username" :show-overflow-tooltip="true">>
+      <el-table-column label="别名" prop="alias" sortable>
       </el-table-column>
-      <el-table-column label="创建时间" prop="creation_time" :show-overflow-tooltip="true">>
+      <el-table-column label="创建人" prop="creator_username" sortable>
       </el-table-column>
-      <el-table-column label="操作" width="210">
+      <el-table-column label="创建时间" prop="creation_time" sortable>
+      </el-table-column>
+      <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="info" style="margin: 0px 1px" @click="on_show_detail(scope.row)">详情</el-button>
-          <el-button size="mini" type="warning" style="margin: 0px 1px" @click="on_change(scope.row)">修改</el-button>
-          <el-button size="mini" type="danger" style="margin: 0px 1px" @click="on_delete(scope.row)">删除</el-button>
+          <el-button size="mini" type="info" style="padding: 4px" @click="on_show_detail(scope.row)">详情</el-button>
+          <el-button size="mini" type="warning" style="padding: 4px" @click="on_change(scope.row)">修改</el-button>
+          <el-button size="mini" type="danger" style="padding: 4px" @click="on_delete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <div style="margin: 16px; height: 50px">
-      <el-pagination style="float: right" v-loading="page_loading" element-loading-spinner="el-icon-loading" @current-change="get_data(false, false)" :current-page.sync="params.page" :page-size="params.page_size" background layout="total, prev, pager, next" :total="count">
-      </el-pagination>
-    </div>
   </div>
-
+  </d2-container>
 </template>
-
 <script>
-import master from "@/api";
-import Vue from "vue";
-import calc from "@/libs/calc";
-import axios from "axios";
-import { baseURL } from "@/api";
-import maps from "@/libs/maps";
-import COptionBar from "@/components/OptionBar";
+import Vue from 'vue'
+import ChangeTable from './components/ChangeTable'
+
+import { master, Masters } from '@/api'
+
 export default {
-  data() {
+  name: 'table-mgmt',
+  data () {
     return {
-      url: "mgmt/table",
-      data: [],
-      count: 0,
-      loading: false,
-      page_loading: false,
-      maps: maps,
-      params: {
-        page_size: 10,
-        page: 1,
-        search: ""
-      },
-      show_more: false
-    };
+      tables: [],
+      add_location: {
+        right: (window.innerWidth - 1200) / 2 > 20 ? Math.round((window.innerWidth - 1200) / 2) : 20,
+        top: window.innerHeight - 140
+      }
+    }
   },
-  mounted() {
-    this.params.page_size = this.$c_calc_page_size();
-    this.get_data();
+  mounted () {
+    master.get(`mgmt/table`).then((response) => {
+      // this.tables = response[`data`]
+      //  this.tables = response.data.cmlist
+      this.tables = response.data.data
+    }).catch((error) => {
+      console.log('err:' + error)
+    })
   },
   methods: {
-    get_data(reset_page = false, get_count = false) {
-      if (reset_page) {
-        this.params.page = 1;
-      }
-      this.$c_ajax_get(this, get_count);
+    on_show_detail (table) {
+      console.log(table)
+      var ShowTable = Vue.component(`ShowTable`, ChangeTable)
+      var vm = new ShowTable({ propsData: { data: table } })
+      vm.$mount()
+      this.$el.appendChild(vm.$el)
     },
-    on_change_sort(args) {
-      console.log(args);
-      if (args.order == null) {
-        this.params.ordering = "";
-      } else if (args.order == "descending") {
-        this.params.ordering = "-" + args.prop;
-      } else {
-        this.params.ordering = args.prop;
-      }
-      this.get_data(true);
+    on_change (table) {
+      console.log(table)
+      var Comp = Vue.component(`ChangeTable`, ChangeTable)
+      var vm = new Comp({ propsData: { is_create: false, data: table } })
+      vm.$mount()
+      this.$el.appendChild(vm.$el)
     },
-    on_change_filter(filters) {
-      for (let i in filters) {
-        this.params[i] = filters[i];
-      }
-      this.page = 1;
-      this.get_data();
-    },
-    on_show_detail(item) {
-      this.$c_add_dialog(this, "ShowTable", { table: item });
-    },
-    on_add() {
-      var vm = this.$c_add_dialog(this, "ChangeTable", {
-        is_create: true
-      });
-      vm.$on("add_table", item => {
-        this.data.unshift(item);
-      });
-    },
-    on_change(table) {
-      var vm = this.$c_add_dialog(this, "ChangeTable", {
-        is_create: false,
-        data: table
-      });
-      // vm.$on("update_item", (item) => {
-      //   this.data.slice(this.data.indexOf(table), 1, item);
-      // });
-    },
-    on_delete(item) {
-      var vm = this.$c_add_dialog(this, "DeleteTable", { data: item });
-      vm.$on("delete_item", item => {
-        this.data.splice(this.data.indexOf(item), 1);
-      });
-    },
-    on_reminder(item) {
-      this.$c_master
-        .post(`${this.url}/${item.id}/reminder`)
-        .then(response => {
-          this.$message.success("催单成功");
+    on_delete (table) {
+      console.log(table.id)
+      this.$confirm(`删除表将删除表中所有数据，包括修改记录和已删除记录，是否继续？`, `警告`, { type: `warning` }).then(() => {
+        var formData = JSON.parse(JSON.stringify(table))
+        Masters.delete(`mgmt/table/${formData.id}`).then((response) => {
+          this.$message.success(`删除成功`)
+          this.tables.splice(this.tables.indexOf(table), 1)
+        }).catch((error) => {
+          if (error.response.data && error.response.data.detail) {
+            this.$message.error(String(error.response.data.detail))
+          }
         })
-        .catch(error => {});
+      })
     },
-    on_confirm(item) {
-      this.$c_master
-        .post(`${this.url}/${item.id}/confirm`)
-        .then(response => {
-          this.$message.success("确认成功");
-          this.data.splice(this.data.indexOf(item), 1, response.data);
-        })
-        .catch(error => {});
-    },
-    on_show_more() {
-      this.show_more = true;
-      setTimeout(() => {
-        this.show_more = false;
-      }, 5000);
-    },
-    on_come_again(item) {
-      var vm = this.$c_add_dialog(this, "CCreateUpdateWorkOrder", {
-        workorder: item
-      });
-      vm.$on("add_item", item => {
-        this.data.unshift(item);
-      });
+    on_add_table () {
+      var Comp = Vue.component(`ChangeTable`, ChangeTable)
+      var vm = new Comp({ propsData: { is_create: true, id: this.tables.length } })
+      console.log(this.tables.length)
+      vm.$mount()
+      vm.$on(`add_table`, (table) => {
+        this.tables.push(table)
+        console.log(table)
+      })
+      this.$el.appendChild(vm.$el)
     }
   }
-};
-</script>
-
-
-<style scoped>
-.c-option-bar >>> .el-input-group__append {
-  border-left: 0;
-  background-color: #62a5f3 !important;
-  color: #ffffff !important;
 }
+</script>
+<style scoped>
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 100;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 20%;
+  }
 </style>

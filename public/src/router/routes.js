@@ -19,34 +19,16 @@ const frameIn = [
         component: () => import('@/pages/index')
       },
       {
-        path: '/page1',
-        name: 'page1',
-        component: () => import('@/pages/page1'),
-        meta: { meta, title: '页面 1' }
-      },
-      {
-        path: '/page2',
-        name: 'page2',
-        component: () => import('@/pages/page2'),
-        meta: { meta, title: '页面 2' }
-      },
-      {
-        path: '/page3',
-        name: 'page3',
-        component: () => import('@/pages/page3'),
-        meta: { meta, title: '页面 3' }
-      },
-      {
-        path: '/table-mgmt',
-        name: 'CMDB',
-        component: () => import('@/pages/table-mgmt'),
-        meta: { meta, title: 'CMDB' }
+        path: '/resource',
+        name: '资源',
+        component: () => import('@/pages/resource'),
+        meta: { meta, title: '资源' }
       },
       {
         path: '/cmdb',
-        name: 'CMDB',
+        name: '模型',
         component: () => import('@/pages/cmdb'),
-        meta: { meta, title: 'CMDB' }
+        meta: { meta, title: '模型' }
       }
     ]
   }
