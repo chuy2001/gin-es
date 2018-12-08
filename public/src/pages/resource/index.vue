@@ -59,10 +59,10 @@ export default {
           page: this.page
         })
         .then(res => {
-          console.log('模拟表格数据请求完毕', res)
+          console.log('模拟数据请求完毕', res)
           this.loading = false
           this.$notify({
-            title: '模拟表格数据请求完毕'
+            title: '模拟数据请求完毕'
           })
           this.table = res.data.data.list
           this.page = res.data.data.page
@@ -70,7 +70,7 @@ export default {
         .catch(err => {
           this.loading = false
           this.$notify({
-            title: '模拟表格数据请求异常'
+            title: '模拟数据请求异常'
           })
           console.log('err', err)
         })

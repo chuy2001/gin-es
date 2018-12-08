@@ -87,6 +87,7 @@ Mock.mock('/v1/mgmt/table', 'delete', () => {
 Mock.mock('/v1/mgmt/instance', 'post', ({ body }) => {
   // 这是通过 post 传来的参数
   body = JSON.parse(body)
+  console.log('模拟请求', body)
   const { page } = body
   page.total = 1000
   return Mock.mock(
@@ -97,7 +98,7 @@ Mock.mock('/v1/mgmt/instance', 'post', ({ body }) => {
         page,
         'list|20': [
           {
-            'key': '@guid',
+            'id': '@guid',
             'value|1': [10, 100, 200, 500],
             'type': '@boolean',
             'admin': '@cname',

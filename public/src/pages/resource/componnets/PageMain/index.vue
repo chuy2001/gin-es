@@ -54,9 +54,9 @@
         width="55">
       </el-table-column>
 
-      <el-table-column label="卡密" :show-overflow-tooltip="true">
+      <el-table-column label="ID" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          {{scope.row.key}}
+          {{scope.row.id}}
         </template>
       </el-table-column>
 
@@ -167,7 +167,7 @@ export default {
       currentTableData: [],
       multipleSelection: [],
       downloadColumns: [
-        { label: '卡密', prop: 'key' },
+        { label: 'ID', prop: 'id' },
         { label: '面值', prop: 'value' },
         { label: '状态', prop: 'type' },
         { label: '管理员', prop: 'admin' },

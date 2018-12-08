@@ -7,10 +7,10 @@
     size="mini"
     style="margin-bottom: -18px;">
 
-    <el-form-item label="状态" prop="type">
+    <el-form-item label="类型" prop="type">
       <el-select
         v-model="form.type"
-        placeholder="状态选择"
+        placeholder="选择类型"
         style="width: 100px;">
         <el-option label="状态 1" value="1"/>
         <el-option label="状态 2" value="2"/>
@@ -27,10 +27,10 @@
         style="width: 100px;"/>
     </el-form-item>
 
-    <el-form-item label="卡密" prop="key">
+    <el-form-item label="ID" prop="id">
       <el-input
-        v-model="form.key"
-        placeholder="卡密"
+        v-model="form.id"
+        placeholder="ID"
         style="width: 120px;"/>
     </el-form-item>
 
@@ -68,7 +68,7 @@ export default {
       form: {
         type: '1',
         user: 'FairyEver',
-        key: '',
+        id: '',
         note: ''
       },
       rules: {
