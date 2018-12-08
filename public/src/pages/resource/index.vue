@@ -1,30 +1,28 @@
 <template>
   <d2-container :filename="filename">
-    <demo-page-header
-      slot="header"
-      @submit="handleSubmit"
-      ref="header"/>
-    <demo-page-main
-      :table-data="table"
-      :loading="loading"/>
+    <demo-page-header slot="header" @submit="handleSubmit" ref="header"/>
+    <demo-page-main :table-data="table" :loading="loading"/>
     <demo-page-footer
       slot="footer"
       :current="page.current"
       :size="page.size"
       :total="page.total"
-      @change="handlePaginationChange"/>
+      @change="handlePaginationChange"
+    />
   </d2-container>
 </template>
 
 <script>
-import { BusinessTable1List } from '@/api/business/table'
+
+import { Master } from '@/api'
+
 export default {
   // name 值和本页的 $route.name 一致才可以缓存页面
   name: 'demo-business-table-1',
   components: {
-    'DemoPageHeader': () => import('./componnets/PageHeader'),
-    'DemoPageMain': () => import('./componnets/PageMain'),
-    'DemoPageFooter': () => import('./componnets/PageFooter')
+    DemoPageHeader: () => import('./componnets/PageHeader'),
+    DemoPageMain: () => import('./componnets/PageMain'),
+    DemoPageFooter: () => import('./componnets/PageFooter')
   },
   data () {
     return {
@@ -55,17 +53,19 @@ export default {
       this.$notify({
         title: '开始请求模拟表格数据'
       })
-      BusinessTable1List({
-        ...form,
-        page: this.page
-      })
+      Master
+        .post(`/business/table`, {
+          ...form,
+          page: this.page
+        })
         .then(res => {
+          console.log('模拟表格数据请求完毕', res)
           this.loading = false
           this.$notify({
             title: '模拟表格数据请求完毕'
           })
-          this.table = res.list
-          this.page = res.page
+          this.table = res.data.data.list
+          this.page = res.data.data.page
         })
         .catch(err => {
           this.loading = false

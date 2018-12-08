@@ -2,14 +2,14 @@
   <el-dialog width="900px" :title="data?'修改表 '+data.name:'创建表'" :visible.sync="is_visible" @close="on_close">
     <el-form :inline="true" size="small" label-width="60px">
       <el-form-item label="表名:" :error="String(errors.name?errors.name:'')">
-        <el-input v-model="form_data.name" style="width: 350px"></el-input>
+        <el-input v-model="form_data.name" placeholder="支持字母" style="width: 350px"></el-input>
       </el-form-item>
       <el-form-item label="别名:" :error="String(errors.alias?errors.alias:'')">
-        <el-input v-model="form_data.alias" style="width: 350px"></el-input>
+        <el-input v-model="form_data.alias" placeholder="支持中英文"  style="width: 350px"></el-input>
       </el-form-item>
     </el-form>
     <el-form label-width="60px" size="small">
-      <el-form-item label="自诉:" :error="String(errors.readme?errors.readme:'')">
+      <el-form-item label="描述:" :error="String(errors.readme?errors.readme:'')">
         <el-input v-model="form_data.readme" type="textarea"></el-input>
       </el-form-item>
     </el-form>

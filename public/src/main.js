@@ -21,7 +21,7 @@ import { frameInRoutes } from '@/router/routes'
 // 核心插件
 Vue.use(d2Admin)
 
-new Vue({
+var app = new Vue({
   router,
   store,
   i18n,
@@ -49,3 +49,5 @@ new Vue({
     this.$store.commit('d2admin/fullscreen/listen')
   }
 }).$mount('#app')
+
+export default app

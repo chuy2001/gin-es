@@ -1,23 +1,23 @@
 import Mock from 'mockjs'
 
 const userDB = [{
-    username: 'admin',
-    password: 'admin',
-    uuid: 'admin-uuid',
-    name: '管理员'
-  },
-  {
-    username: 'editor',
-    password: 'editor',
-    uuid: 'editor-uuid',
-    name: '编辑'
-  },
-  {
-    username: 'user1',
-    password: 'user1',
-    uuid: 'user1-uuid',
-    name: '用户1'
-  }
+  username: 'admin',
+  password: 'admin',
+  uuid: 'admin-uuid',
+  name: '管理员'
+},
+{
+  username: 'editor',
+  password: 'editor',
+  uuid: 'editor-uuid',
+  name: '编辑'
+},
+{
+  username: 'user1',
+  password: 'user1',
+  uuid: 'user1-uuid',
+  name: '用户1'
+}
 ]
 
 Mock.mock('/api/login', 'post', ({ url, type, body }) => {
@@ -65,14 +65,6 @@ Mock.mock('/v1/mgmt/table', 'get', ({ url, type, body }) => {
   }])
 })
 
-// Mock.mock('/api/v1/mgmt/table', 'post', ({ url, type, body }) => {
-//   const bodyObj = JSON.parse(body)
-//   console.log(bodyObj)
-//   bodyObj['creator_username'] = 'admin'
-//   bodyObj['creation_time'] = formatDate (new Date())
-//   return bodyObj
-// })
-
 Mock.mock('/v1/mgmt/table', 'put', ({ url, type, body }) => {
   const bodyObj = JSON.parse(body)
   console.log(bodyObj)
@@ -92,17 +84,7 @@ Mock.mock('/v1/mgmt/table', 'delete', () => {
   }
 })
 
-var  formatDate  =   function (date)  {      
-  var y  =  date.getFullYear()     
-  var m  =  date.getMonth() +1; 
-  m = m <10 ? '0'+m:m    
-  var  d  =  date.getDate(); 
-  d  = d <10 ? ('0'+ d): d    
-  return y + '-' + m + '-' + d
-}
-
-
-Mock.mock('/api/business/table', ({ body }) => {
+Mock.mock('/v1/mgmt/instance', 'post', ({ body }) => {
   // 这是通过 post 传来的参数
   body = JSON.parse(body)
   const { page } = body

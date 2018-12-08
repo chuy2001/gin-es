@@ -63,7 +63,7 @@
 import Vue from 'vue'
 import ChangeTable from './components/ChangeTable'
 
-import { master, Masters } from '@/api'
+import { Masters } from '@/api'
 
 export default {
   name: 'table-mgmt',
@@ -77,7 +77,7 @@ export default {
     }
   },
   mounted () {
-    master.get(`mgmt/table`).then((response) => {
+    Masters.get(`mgmt/table`).then((response) => {
       // this.tables = response[`data`]
       //  this.tables = response.data.cmlist
       this.tables = response.data.data
