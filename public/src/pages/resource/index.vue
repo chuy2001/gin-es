@@ -54,7 +54,7 @@ export default {
         title: '开始请求模拟表格数据'
       })
       Master
-        .post(`/business/table`, {
+        .post(`/mgmt/instance`, {
           ...form,
           page: this.page
         })
