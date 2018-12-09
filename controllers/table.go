@@ -15,7 +15,7 @@ var TableModel = new(models.TableModel)
 
 //GetTable ...
 func (ctrl TableController) GetTable(c *gin.Context) {
-	page_size := c.DefaultQuery("page_size", "10")
+	page_size := c.DefaultQuery("size", "10")
 	page := c.DefaultQuery("page", "0")
 	search := c.Query("search") 
 

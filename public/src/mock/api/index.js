@@ -84,7 +84,7 @@ Mock.mock('/v1/mgmt/table', 'delete', () => {
   }
 })
 
-Mock.mock('/v1/mgmt/instance', 'post', ({ body }) => {
+Mock.mock(RegExp('/v2/mgmt/instance' + '.*'), 'post', ({ body }) => {
   // 这是通过 post 传来的参数
   body = JSON.parse(body)
   console.log('模拟请求', body)

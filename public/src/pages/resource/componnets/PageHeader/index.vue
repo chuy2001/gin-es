@@ -12,8 +12,8 @@
         v-model="form.type"
         placeholder="选择类型"
         style="width: 100px;">
-        <el-option label="状态 1" value="1"/>
-        <el-option label="状态 2" value="2"/>
+        <el-option label="服务器" value="server"/>
+        <el-option label="网络设备" value="network"/>
         <el-option label="状态 3" value="3"/>
         <el-option label="状态 4" value="4"/>
         <el-option label="状态 5" value="5"/>
@@ -66,7 +66,7 @@ export default {
   data () {
     return {
       form: {
-        type: '1',
+        type: '',
         user: 'FairyEver',
         id: '',
         note: ''

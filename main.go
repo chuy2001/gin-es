@@ -84,6 +84,13 @@ func main() {
 		v1.POST("/mgmt/table", table.AddTable)
 		v1.PUT("/mgmt/table/:id", table.UpdateTable)
 		v1.DELETE("/mgmt/table/:id", table.DeleteTable)
+
+		/*** START Table Management ***/
+		instance := new(controllers.InstanceController)
+		// v1.GET("/mgmt/instance", instance.GetInstance)
+		v1.POST("/mgmt/instance", instance.GetInstance)
+		// v1.PUT("/mgmt/instance/:id", instance.UpdateInstance)
+		// v1.DELETE("/mgmt/instance/:id", instance.DeleteInstance)
 	}
 
 	r.Static("/public", "./public")

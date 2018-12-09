@@ -13,8 +13,7 @@
 </template>
 
 <script>
-
-import { Master } from '@/api'
+import { Masters } from '@/api'
 
 export default {
   // name 值和本页的 $route.name 一致才可以缓存页面
@@ -51,13 +50,16 @@ export default {
     handleSubmit (form) {
       this.loading = true
       this.$notify({
-        title: '开始请求模拟表格数据'
+        title: '请求模拟数据'
       })
-      Master
-        .post(`/mgmt/instance`, {
+      Masters.post(
+        `/mgmt/instance`,
+        {
           ...form,
           page: this.page
-        })
+        },
+        { params: { page: 1, size: 10 } }
+      )
         .then(res => {
           console.log('模拟数据请求完毕', res)
           this.loading = false
