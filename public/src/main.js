@@ -11,6 +11,11 @@ import '@/mock'
 import i18n from './i18n'
 // 核心插件
 import d2Admin from '@/plugin/d2admin'
+// [ 可选插件组件 ] 图表
+import VCharts from 'v-charts'
+
+// [ 可选插件组件 ] 网格布局组件
+import { GridLayout, GridItem } from 'vue-grid-layout'
 
 // 菜单和路由设置
 import router from './router'
@@ -20,6 +25,9 @@ import { frameInRoutes } from '@/router/routes'
 
 // 核心插件
 Vue.use(d2Admin)
+Vue.use(VCharts)
+Vue.component('d2-grid-layout', GridLayout)
+Vue.component('d2-grid-item', GridItem)
 
 var app = new Vue({
   router,

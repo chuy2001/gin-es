@@ -5,6 +5,7 @@ export default [
     title: '资源管理',
     icon: 'folder-o',
     children: [
+      { path: '/dashboard', title: '概览' },
       { path: '/resource', title: '资源' },
       { path: '/cmdb', title: '模型' }
     ]

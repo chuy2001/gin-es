@@ -19,6 +19,12 @@ const frameIn = [
         component: () => import('@/pages/index')
       },
       {
+        path: '/dashboard',
+        name: '概览',
+        component: () => import('@/pages/dashboard'),
+        meta: { meta, title: '概览' }
+      },
+      {
         path: '/resource',
         name: '资源',
         component: () => import('@/pages/resource'),
