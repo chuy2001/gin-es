@@ -74,9 +74,9 @@ func main() {
 
 		/*** START ElasticSearch ***/
 		es := new(controllers.EsController)
-		v1.POST("/table", es.AddTable)
-		v1.POST("/_search", es.Search)
-		v1.POST("/_msearch", es.MSearch)
+		v1.POST("/es/table", es.AddTable)
+		v1.POST("/es/search", es.Search)
+		v1.POST("/es/msearch", es.MSearch)
 
 		/*** START Table Management ***/
 		table := new(controllers.TableController)
